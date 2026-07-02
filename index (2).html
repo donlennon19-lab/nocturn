@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nocturne — a journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --night:#161C33;
+    --night-2:#10152A;
+    --night-3:#1E2745;
+    --cream:#F1ECDD;
+    --cream-soft:#C7C2B2;
+    --gold:#C9A66B;
+    --gold-dim:#8C7A56;
+    --moon:#EDE6D3;
+    --rule:rgba(201,166,107,0.28);
+    --max:700px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  html, body{height:100%;}
+  body{
+    margin:0;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    background:
+      radial-gradient(1px 1px at 8% 12%, var(--cream-soft) 0, transparent 60%),
+      radial-gradient(1px 1px at 22% 38%, var(--cream-soft) 0, transparent 60%),
+      radial-gradient(1.5px 1.5px at 41% 8%, var(--gold) 0, transparent 60%),
+      radial-gradient(1px 1px at 63% 24%, var(--cream-soft) 0, transparent 60%),
+      radial-gradient(1px 1px at 78% 15%, var(--cream-soft) 0, transparent 60%),
+      radial-gradient(1.5px 1.5px at 91% 40%, var(--gold) 0, transparent 60%),
+      radial-gradient(1px 1px at 12% 65%, var(--cream-soft) 0, transparent 60%),
+      radial-gradient(1px 1px at 33% 82%, var(--cream-soft) 0, transparent 60%),
+      radial-gradient(1.5px 1.5px at 55% 92%, var(--gold) 0, transparent 60%),
+      radial-gradient(1px 1px at 87% 78%, var(--cream-soft) 0, transparent 60%),
+      radial-gradient(1px 1px at 70% 60%, var(--cream-soft) 0, transparent 60%),
+      linear-gradient(180deg, var(--night-2) 0%, var(--night) 45%, var(--night-2) 100%);
+    background-attachment: fixed;
+    color:var(--cream);
+    font-family:'Cormorant Garamond', serif;
+  }
+  a{color:inherit;}
+  ::selection{background:var(--gold); color:var(--night-2);}
+
+  a:focus-visible, button:focus-visible{
+    outline:2px solid var(--gold);
+    outline-offset:3px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation:none !important; transition:none !important; scroll-behavior:auto !important;}
+  }
+
+  /* ---------- Moon mark ---------- */
+  .moon-mark{
+    display:inline-block;
+    width:1em; height:1em;
+    position:relative;
+    flex-shrink:0;
+  }
+  .moon-mark svg{width:100%; height:100%; display:block;}
+
+  /* ---------- Masthead ---------- */
+  header.masthead{
+    border-bottom:1px solid var(--rule);
+    padding:36px 24px 20px;
+    position:relative;
+  }
+  .masthead-inner{
+    max-width:1040px;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:14px;
+  }
+  .masthead-brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    cursor:pointer;
+  }
+  .masthead-brand .moon-mark{width:22px; height:22px; color:var(--gold);}
+  .masthead-title{
+    font-family:'Cinzel', serif;
+    font-weight:500;
+    font-size:clamp(24px, 4.4vw, 34px);
+    letter-spacing:0.06em;
+    margin:0;
+    color:var(--moon);
+  }
+  .masthead-meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--cream-soft);
+  }
+  nav.masthead-nav{
+    max-width:1040px;
+    margin:18px 0 0;
+    display:flex;
+    align-items:center;
+    gap:24px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11.5px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+  }
+  nav.masthead-nav a{
+    text-decoration:none;
+    color:var(--cream-soft);
+    padding-bottom:4px;
+    border-bottom:1px solid transparent;
+    transition:color .15s ease, border-color .15s ease;
+  }
+  nav.masthead-nav a:hover, nav.masthead-nav a.active{
+    color:var(--gold);
+    border-bottom-color:var(--gold);
+  }
+
+  /* faint sunburst divider under nav */
+  .sunburst-rule{
+    max-width:1040px;
+    margin:16px 0 0;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--rule) 20%, var(--gold-dim) 50%, var(--rule) 80%, transparent);
+  }
+
+  main{
+    flex:1 0 auto;
+    max-width:1040px;
+    margin:0;
+    padding:0 24px 90px;
+    position:relative;
+    z-index:1;
+  }
+
+  .view{display:none;}
+  .view.active{display:block;}
+
+  /* ---------- Index ---------- */
+  .intro{
+    max-width:var(--max);
+    padding:48px 0 32px;
+    border-bottom:1px solid var(--rule);
+  }
+  .intro p{
+    font-size:19px;
+    font-style:italic;
+    line-height:1.6;
+    color:var(--cream-soft);
+    margin:0;
+  }
+
+  .entry-list{list-style:none; margin:0; padding:0; margin-top:44px;}
+  .entry{
+    display:grid;
+    grid-template-columns:52px 1fr;
+    gap:20px;
+    padding:36px 0;
+    border-bottom:1px solid var(--rule);
+    cursor:pointer;
+  }
+  .entry-phase{
+    padding-top:6px;
+    color:var(--gold);
+    opacity:0.85;
+  }
+  .entry-phase .moon-mark{width:20px; height:20px;}
+  .entry-title{
+    font-family:'Cinzel', serif;
+    font-weight:500;
+    font-size:clamp(20px, 2.8vw, 26px);
+    letter-spacing:0.01em;
+    margin:0 0 10px;
+    color:var(--moon);
+    transition:color .15s ease;
+  }
+  .entry:hover .entry-title{color:var(--gold);}
+  .entry-dek{
+    color:var(--cream-soft);
+    font-size:16.5px;
+    font-style:italic;
+    line-height:1.6;
+    margin:0 0 14px;
+    max-width:560px;
+  }
+  .entry-meta{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.09em;
+    color:var(--gold-dim);
+    display:flex;
+    gap:16px;
+    flex-wrap:wrap;
+  }
+  .tag{
+    display:inline-block;
+    padding:3px 9px;
+    border:1px solid var(--rule);
+    border-radius:1px;
+    color:var(--cream-soft);
+  }
+
+  /* ---------- Post view ---------- */
+  .post-head{
+    max-width:var(--max);
+    margin:32px auto 0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    text-align:center;
+  }
+  .back-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    text-decoration:none;
+    color:var(--cream-soft);
+    align-self:flex-start;
+    margin-bottom:40px;
+  }
+  .back-link:hover{color:var(--gold);}
+
+  .stamp{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.1em;
+    color:var(--gold);
+    margin-bottom:22px;
+  }
+  .stamp .dot{width:3px;height:3px;border-radius:50%;background:var(--gold-dim);}
+
+  .post-title{
+    font-family:'Cinzel', serif;
+    font-weight:500;
+    font-size:clamp(28px, 4.6vw, 44px);
+    line-height:1.2;
+    letter-spacing:0.02em;
+    margin:0 0 20px;
+    color:var(--moon);
+  }
+  .post-dek{
+    font-size:19px;
+    line-height:1.6;
+    color:var(--cream-soft);
+    margin:0 auto 36px;
+    font-style:italic;
+    max-width:560px;
+  }
+  .post-head::after{
+    content:"";
+    display:block;
+    width:80px;
+    height:1px;
+    margin:0 auto 44px;
+    background:linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+  }
+
+  .post-body{
+    max-width:var(--max);
+    margin:0 auto 60px;
+    font-size:18.5px;
+    line-height:1.8;
+  }
+  .post-body p{margin:0 0 24px;}
+  .post-body h2{
+    font-family:'Cinzel', serif;
+    font-weight:500;
+    font-size:24px;
+    letter-spacing:0.02em;
+    color:var(--moon);
+    margin:44px 0 18px;
+  }
+  .post-body blockquote{
+    margin:32px 0;
+    padding:6px 0 6px 22px;
+    border-left:1px solid var(--gold);
+    font-style:italic;
+    color:var(--cream-soft);
+  }
+
+  /* ---------- About ---------- */
+  .about{
+    max-width:var(--max);
+    padding:56px 0;
+    text-align:center;
+  }
+  .about .moon-mark{width:36px; height:36px; color:var(--gold); margin-bottom:18px;}
+  .about h1{
+    font-family:'Cinzel', serif;
+    font-weight:500;
+    letter-spacing:0.03em;
+    font-size:30px;
+    margin:0 0 24px;
+    color:var(--moon);
+  }
+  .about p{font-size:18px; line-height:1.75; color:var(--cream-soft); margin:0 0 20px; text-align:left;}
+
+  footer{
+    flex-shrink:0;
+    border-top:1px solid var(--rule);
+    padding:28px;
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:0.12em;
+    color:var(--cream-soft);
+    position:relative;
+    z-index:1;
+  }
+
+  @media (max-width:600px){
+    .entry{grid-template-columns:1fr; gap:8px;}
+    .entry-phase{padding-top:0;}
+    .back-link{margin-bottom:22px;}
+  }
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="masthead-brand" onclick="navigate('home')">
+      <span class="moon-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20 14.5A9 9 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" fill="currentColor"/></svg>
+      </span>
+      <h1 class="masthead-title">Nocturne</h1>
+    </div>
+    <div class="masthead-meta" id="today"></div>
+  </div>
+  <nav class="masthead-nav">
+    <a href="#home" onclick="navigate('home')" class="active" data-nav="home">Index</a>
+    <a href="#about" onclick="navigate('about')" data-nav="about">About</a>
+  </nav>
+  <div class="sunburst-rule"></div>
+</header>
+
+<main>
+
+  <!-- INDEX VIEW -->
+  <section class="view active" id="view-home">
+    <ul class="entry-list" id="entry-list"></ul>
+  </section>
+
+  <!-- POST VIEW -->
+  <section class="view" id="view-post">
+    <div class="post-head">
+      <a href="#home" class="back-link" onclick="navigate('home')">&larr; Back to index</a>
+      <div class="stamp" id="post-stamp"></div>
+      <h1 class="post-title" id="post-title"></h1>
+      <p class="post-dek" id="post-dek"></p>
+    </div>
+    <div class="post-body" id="post-body"></div>
+  </section>
+
+  <!-- ABOUT VIEW -->
+  <section class="view" id="view-about">
+    <div class="about">
+      <span class="moon-mark">
+        <svg viewBox="0 0 24 24" fill="none"><path d="M20 14.5A9 9 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" fill="currentColor"/></svg>
+      </span>
+      <h1>About this journal</h1>
+      <p>Random thoughts, things, and daily occurrences.</p>
+    </div>
+  </section>
+
+</main>
+
+<footer>Nocturne</footer>
+
+<script>
+  /* ============================================================
+     HOW TO ADD OR EDIT POSTS
+     Just edit the array below. Each post needs:
+       title, dek (subtitle), date, readTime, tags (array), body (HTML string)
+     New posts can be added anywhere in the array — the newest
+     should go first (top of the array = top of the index).
+  ============================================================ */
+  const posts = [
+    {
+      title: "Starting somewhere",
+      dek: "",
+      date: "2026-07-03",
+      readTime: "",
+      tags: ["notes"],
+      body: `
+        <p>1:26am and no clue why I'm still up, I have uni at 8am lol. Got bored so figured now's as good a time as any to actually start this blog. No idea what this is even gonna turn into, just wanted to get something posted.</p>
+        <p>Portugal vs Croatia is on rn, really interesting game. Think Portugal's got the upper hand right now. Watching till the end regardless.</p>
+        <p>We'll see how tomorrow goes on very little sleep. Might just skip it ngl, we'll see how I feel when the alarm goes off.</p>
+      `
+    }
+  ];
+
+  const moonSvg = `<svg viewBox="0 0 24 24" fill="none"><path d="M20 14.5A9 9 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5Z" fill="currentColor"/></svg>`;
+
+  function formatDate(iso){
+    const d = new Date(iso + "T00:00:00");
+    return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  function renderList(){
+    const list = document.getElementById('entry-list');
+    list.innerHTML = posts.map((p, i) => `
+      <li class="entry" onclick="navigate('post', ${i})">
+        <div class="entry-phase"><span class="moon-mark">${moonSvg}</span></div>
+        <div>
+          <h2 class="entry-title">${p.title}</h2>
+          ${p.dek ? `<p class="entry-dek">${p.dek}</p>` : ''}
+          <div class="entry-meta">
+            <span>${formatDate(p.date)}</span>
+            ${p.readTime ? `<span>${p.readTime} read</span>` : ''}
+          </div>
+        </div>
+      </li>
+    `).join('');
+  }
+
+  function renderPost(i){
+    const p = posts[i];
+    document.getElementById('post-stamp').innerHTML =
+      `<span>No. ${String(posts.length - i).padStart(2,'0')}</span><span class="dot"></span><span>${formatDate(p.date)}</span>${p.readTime ? `<span class="dot"></span><span>${p.readTime}</span>` : ''}`;
+    document.getElementById('post-title').textContent = p.title;
+    document.getElementById('post-dek').textContent = p.dek || '';
+    document.getElementById('post-dek').style.display = p.dek ? '' : 'none';
+    document.getElementById('post-body').innerHTML = p.body;
+  }
+
+  function navigate(view, index){
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.masthead-nav a').forEach(a => a.classList.remove('active'));
+
+    if(view === 'post'){
+      renderPost(index);
+      document.getElementById('view-post').classList.add('active');
+      window.location.hash = 'post-' + index;
+    } else {
+      document.getElementById('view-' + view).classList.add('active');
+      const navEl = document.querySelector(`[data-nav="${view}"]`);
+      if(navEl) navEl.classList.add('active');
+      window.location.hash = view;
+    }
+    window.scrollTo(0,0);
+  }
+
+  function routeFromHash(){
+    const hash = window.location.hash.replace('#','');
+    if(hash.startsWith('post-')){
+      const idx = parseInt(hash.split('-')[1], 10);
+      if(!isNaN(idx) && posts[idx]) { navigate('post', idx); return; }
+    }
+    if(hash === 'about'){ navigate('about'); return; }
+    navigate('home');
+  }
+
+  document.getElementById('today').textContent = new Date().toLocaleDateString('en-US', { weekday:'long', month:'long', day:'numeric', year:'numeric' });
+
+  renderList();
+  routeFromHash();
+  window.addEventListener('hashchange', routeFromHash);
+</script>
+
+</body>
+</html>
